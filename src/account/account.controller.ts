@@ -7,11 +7,11 @@ export class AccountController {
   constructor(private readonly accountService: AccountService) {}
   @Post('/signin')
   signIn(@Body() createAccountDto: CreateAccountDto) {
-    return createAccountDto;
+    return this.accountService.signIn(createAccountDto);
   }
   @Post('/signup')
   signUp(@Body() createAccountDto: CreateAccountDto) {
-    return createAccountDto;
+    return this.accountService.signUp(createAccountDto);
   }
   @Get('signup/kakao')
   kakaoSignUp(@Query() code) {

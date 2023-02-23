@@ -7,12 +7,13 @@ import { KakaoInfo } from './entities/kakao.info.entity';
 import { GoogleInfo } from './entities/google.info.entity';
 import { NaverInfo } from './entities/naver.info.entity';
 import { JwtService } from '@nestjs/jwt';
+import { OAuthService } from './oauth.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Member, KakaoInfo, GoogleInfo, NaverInfo]),
   ],
   controllers: [AccountController],
-  providers: [AccountService, JwtService],
+  providers: [AccountService, JwtService, OAuthService],
 })
 export class AccountModule {}

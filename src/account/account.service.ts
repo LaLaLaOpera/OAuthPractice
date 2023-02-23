@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios from 'axios';
 import { randomBytes } from 'crypto';
+import { passwordEncryption } from 'src/utiles/password.encryption';
 import { Repository } from 'typeorm';
+import { CreateAccountDto } from './dto/create-account.dto';
 import { Member } from './entities/account.entity';
 import { GoogleInfo } from './entities/google.info.entity';
 import { KakaoInfo } from './entities/kakao.info.entity';
 import { NaverInfo } from './entities/naver.info.entity';
+import { OAuthService } from './oauth.service';
 
 @Injectable()
 export class AccountService {
@@ -17,24 +19,67 @@ export class AccountService {
     @InjectRepository(GoogleInfo) private repoGo: Repository<GoogleInfo>,
     @InjectRepository(NaverInfo) private repoNa: Repository<NaverInfo>,
     private readonly jwtService: JwtService,
+    private readonly oAuthService: OAuthService,
   ) {}
+  async signIn(createAccountDto: CreateAccountDto) {
+    const account = await this.repo.findOne({
+      where: {
+        email: createAccountDto.email,
+      },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
+    });
+    const result = await passwordEncryption.validation(
+      createAccountDto.password,
+      account,
+    );
+    if (!result) {
+      throw new Error('Credential Fail');
+    }
+    return this.tokenIssue(account);
+  }
+  async signUp(createAccountDto: CreateAccountDto) {
+    const dupCheck = await this.repo.countBy({
+      email: createAccountDto.email,
+    });
+    if (dupCheck >= 0) {
+      throw new Error('Dup Email');
+    }
+    createAccountDto.password = await passwordEncryption.encryption(
+      createAccountDto.password,
+    );
+    const account = await this.repo.save(createAccountDto);
+    return this.tokenIssue(account);
+  }
   async naverSignUp(code: string) {
-    const info = await this.authAccessToken('naver', code);
-    const data = await this.requestUserData('naver', info.data.access_token);
+    const info = await this.oAuthService.authAccessToken('naver', code);
+    const data = await this.oAuthService.requestUserData(
+      'naver',
+      info.data.access_token,
+    );
     const account = await this.loginOrCreate('naver', data.response.id);
     const payload = this.tokenIssue(account);
     return payload;
   }
   async googleSignUp(code: string) {
-    const info = await this.authAccessToken('google', code);
-    const data = await this.requestUserData('google', info.data.access_token);
+    const info = await this.oAuthService.authAccessToken('google', code);
+    const data = await this.oAuthService.requestUserData(
+      'google',
+      info.data.access_token,
+    );
     const account = await this.loginOrCreate('google', data.sub);
     const payload = this.tokenIssue(account);
     return payload;
   }
   async kakaoSignUp(code: string) {
-    const info = await this.authAccessToken('kakao', code);
-    const data = await this.requestUserData('kakao', info.data.access_token);
+    const info = await this.oAuthService.authAccessToken('kakao', code);
+    const data = await this.oAuthService.requestUserData(
+      'kakao',
+      info.data.access_token,
+    );
     const account = await this.loginOrCreate('kakao', data.id);
     const payload = this.tokenIssue(account);
     return payload;
@@ -50,7 +95,9 @@ export class AccountService {
     }
     const newAcc = await this.repo.save({
       email: `${type}social${randomBytes(6).toString('hex')}@test.com`,
-      password: `${randomBytes(32).toString('hex')}`,
+      password: await passwordEncryption.encryption(
+        `${randomBytes(32).toString('hex')}`,
+      ),
     });
     switch (type) {
       case 'kakao':
@@ -75,56 +122,6 @@ export class AccountService {
         throw new Error('invalid social login');
     }
     return newAcc;
-  }
-  async authAccessToken(type: string, code: string) {
-    const body = {
-      grant_type: 'authorization_code',
-      client_id:
-        type === 'naver'
-          ? process.env.NAVER_CLIENT_ID
-          : type === 'kakao'
-          ? process.env.KAKAO_CLIENT_ID
-          : process.env.GOOGLE_CLIENT_ID,
-      client_secret:
-        type === 'naver'
-          ? process.env.NAVER_CLIENT_SECRET
-          : type === 'kakao'
-          ? process.env.KAKAO_CLIENT_SECRET
-          : process.env.GOOGLE_CLIENT_SECRET,
-      code: code,
-      redirect_uri: 'http://localhost:3000/account/signup/' + type,
-    };
-    const uri =
-      type === 'naver'
-        ? process.env.NAVER_TOKEN_ISSUE
-        : type === 'kakao'
-        ? process.env.KAKAO_TOKEN_ISSUE
-        : process.env.GOOGLE_TOKEN_ISSUE;
-    let info;
-    try {
-      info = await axios.post(uri, body, {
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded',
-        },
-      });
-    } catch (err) {
-      console.log(err);
-    }
-    return info;
-  }
-  async requestUserData(type: string, access_token: string) {
-    const uri =
-      type === 'naver'
-        ? process.env.NAVER_INFO
-        : type === 'kakao'
-        ? process.env.KAKAO_INFO
-        : process.env.GOOGLE_INFO;
-    const { data } = await axios.get(uri, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    return data;
   }
   tokenIssue(account: Member) {
     const init = new Date().getTime();
