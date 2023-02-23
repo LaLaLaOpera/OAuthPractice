@@ -1,0 +1,80 @@
+### test
+POST http://localhost:3000/client/signin
+Content-Type: application/json
+
+{   
+    "email" : "test@test.com",
+    "password" : "123123"
+}
+
+
+### block
+PUT http://localhost:3000/client/a20de162-3a00-443b-baf7-08bc5148f4c6
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImlkIjoiYTIwZGUxNjItM2EwMC00NDNiLWJhZjctMDhiYzUxNDhmNGM2In0sImlhdCI6MTY3MzQyMTk4NX0.Xj-AytzrCcLuLV8Fj7kH6z9xZzD_yQhDFeSZ_8v3qbc
+
+{
+    "setting" : {
+        "Managers" : [
+            {
+            "id" : "mrABC",
+            "password" : "123123"
+            }
+        ],
+        "Authorization" : {
+            "testFeature" : ["mrABC"],
+            "testFeature2" : ["mrABC"]
+        }
+    }
+}
+
+
+### test
+
+POST http://localhost:3000/client/signin/sub/?accesskey=a20de162-3a00-443b-baf7-08bc5148f4c6
+Content-Type: application/json
+
+{   
+    "id" : "mrABC",
+    "password" : "123123"
+}
+
+
+### block
+
+GET http://localhost:3000/client
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoibXJBQkMiLCJyb2xlIjoiTWFuYWdlciIsImFsbG93IjpbInRlc3RGZWF0dXJlIiwidGVzdEZlYXR1cmUyIl19LCJpYXQiOjE2NzM0MzA0MDh9.i7Ti3obCigqO-2jJA6FKSm0uagqv6z-uHIf5H6dtbH4
+
+{
+
+}
+
+### Account
+POST http://localhost:3000/api/signUp?accessKey=5079ab5c65ed920ef71b3a9f4b428efc4d68de9a49b8aff4test636bd875994d592b304960c103f9702576dc51284c269e7a
+Content-Type: application/json
+
+{
+    "email" : "lalala@test.com",
+    "password" : "sample",
+    "birthday" : "2000-10-12",
+    "custom" : {
+        "sample" : "do what I want",
+        "information" : "this is for test"
+    }
+}
+
+### SignIn
+POST http://localhost:3000/api/signIn?accessKey=5079ab5c65ed920ef71b3a9f4b428efc4d68de9a49b8aff4test636bd875994d592b304960c103f9702576dc51284c269e7a
+Content-Type: application/json
+
+{
+    "email" : "lalala@test.com",
+    "password" : "sample"
+}
+### TEST
+GET http://localhost:3000/client/report/5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoibXJBQkMiLCJyb2xlIjoiTWFuYWdlciIsImFsbG93IjpbInRlc3RGZWF0dXJlIiwidGVzdEZlYXR1cmUyIl19LCJpYXQiOjE2NzM0MzA0MDh9.i7Ti3obCigqO-2jJA6FKSm0uagqv6z-uHIf5H6dtbH4
+
+{}
