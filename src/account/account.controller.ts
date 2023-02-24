@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 
@@ -13,19 +13,19 @@ export class AccountController {
   signUp(@Body() createAccountDto: CreateAccountDto) {
     return this.accountService.signUp(createAccountDto);
   }
-  @Get('signup/kakao')
-  kakaoSignUp(@Query() code) {
+  @Get('signup/:route')
+  oAuthSignup(@Query() code, @Param('route') route) {
     console.log(code);
-    return this.accountService.kakaoSignUp(code.code);
-  }
-  @Get('signup/google')
-  googleSignUp(@Query() code) {
-    console.log(code);
-    return this.accountService.googleSignUp(code.code);
-  }
-  @Get('signup/naver')
-  naverSignUp(@Query() code) {
-    console.log(code);
-    return this.accountService.naverSignUp(code.code);
+    console.log(route);
+    switch (route) {
+      case 'kakao':
+        return this.accountService.kakaoSignUp(code.code);
+      case 'google':
+        return this.accountService.googleSignUp(code.code);
+      case 'naver':
+        return this.accountService.naverSignUp(code.code);
+      default:
+        return 'unknown parameter';
+    }
   }
 }

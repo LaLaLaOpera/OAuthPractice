@@ -60,17 +60,20 @@ export class AccountService {
       'naver',
       info.data.access_token,
     );
+    console.log(data);
+
     const account = await this.loginOrCreate('naver', data.response.id);
     const payload = this.tokenIssue(account);
     return payload;
   }
   async googleSignUp(code: string) {
     const info = await this.oAuthService.authAccessToken('google', code);
-    const data = await this.oAuthService.requestUserData(
-      'google',
-      info.data.access_token,
-    );
-    const account = await this.loginOrCreate('google', data.sub);
+    const decode = this.jwtService.decode(info.data.id_token);
+    // const data = await this.oAuthService.requestUserData(
+    //   'google',
+    //   info.data.access_token,
+    // );
+    const account = await this.loginOrCreate('google', decode.sub);
     const payload = this.tokenIssue(account);
     return payload;
   }
@@ -84,7 +87,7 @@ export class AccountService {
     const payload = this.tokenIssue(account);
     return payload;
   }
-  async loginOrCreate(type: string, snsId) {
+  async loginOrCreate(type: string, snsId: string) {
     const account: Member = await this.repo
       .createQueryBuilder('member')
       .leftJoinAndSelect(`member.${type}`, `${type}`)
@@ -93,12 +96,17 @@ export class AccountService {
     if (account?.[type][0].snsId == snsId) {
       return account;
     }
-    const newAcc = await this.repo.save({
+    const newAcc = this.repo.create({
       email: `${type}social${randomBytes(6).toString('hex')}@test.com`,
       password: await passwordEncryption.encryption(
         `${randomBytes(32).toString('hex')}`,
       ),
     });
+
+    // if (snsId?.email != null) {
+    //   newAcc.email = snsId?.email;
+    // }
+    const _account = await this.repo.save(newAcc);
     switch (type) {
       case 'kakao':
         await this.repoKa.save({
@@ -121,7 +129,7 @@ export class AccountService {
       default:
         throw new Error('invalid social login');
     }
-    return newAcc;
+    return _account;
   }
   tokenIssue(account: Member) {
     const init = new Date().getTime();

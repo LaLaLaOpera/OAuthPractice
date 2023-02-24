@@ -3,6 +3,11 @@ import axios from 'axios';
 @Injectable()
 export class OAuthService {
   async authAccessToken(type: string, code: string) {
+    // const code_verifier = crypto.randomBytes(64).toString('hex');
+    // const code_challenge = crypto
+    //   .createHash('sha256')
+    //   .update(code_verifier)
+    //   .digest('base64');
     const body = {
       grant_type: 'authorization_code',
       client_id:
@@ -36,6 +41,7 @@ export class OAuthService {
     } catch (err) {
       console.log(err);
     }
+
     return info;
   }
   async requestUserData(type: string, access_token: string) {

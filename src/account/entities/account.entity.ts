@@ -19,6 +19,13 @@ export class Member extends Base {
   })
   password: string;
 
+  @Column({
+    comment:
+      '자동 생성된 임의 이메일 인지를 판단, OAuth에서 email param을 받거나 직접 생성한 계정일 경우 체크가 된다.',
+    default: false,
+  })
+  isGeneratedEmail: boolean;
+
   @OneToMany(() => UserLog, (userLog) => userLog.account)
   userLogs: UserLog[];
 
