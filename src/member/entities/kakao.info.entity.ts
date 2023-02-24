@@ -1,6 +1,6 @@
-import { Base } from 'src/utiles/base.entity';
+import { Base } from '../../utiles/base.entity';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
-import { Member } from './account.entity';
+import { Member } from './member.entity';
 
 @Entity()
 export class KakaoInfo extends Base {

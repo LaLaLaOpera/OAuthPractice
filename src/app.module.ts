@@ -1,17 +1,17 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { AccountModule } from './account/account.module';
-import { Member } from './account/entities/account.entity';
+import { AccountModule } from './member/account.module';
+import { Member } from './member/entities/member.entity';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
-import { UserLog } from './account/entities/user.log.entity';
-import { KakaoInfo } from './account/entities/kakao.info.entity';
-import { GoogleInfo } from './account/entities/google.info.entity';
-import { NaverInfo } from './account/entities/naver.info.entity';
+import { UserLog } from './member/entities/user.log.entity';
+import { KakaoInfo } from './member/entities/kakao.info.entity';
+import { GoogleInfo } from './member/entities/google.info.entity';
+import { NaverInfo } from './member/entities/naver.info.entity';
 import { JwtMiddleware } from './middleware/jwt.middleware';
 @Module({
   imports: [

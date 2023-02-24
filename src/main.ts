@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AccountModule } from './account/account.module';
+import { AccountModule } from './member/account.module';
 import { AppModule } from './app.module';
 
 async function bootstrap() {

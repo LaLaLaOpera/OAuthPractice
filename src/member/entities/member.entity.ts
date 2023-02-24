@@ -1,4 +1,4 @@
-import { Base } from 'src/utiles/base.entity';
+import { Base } from '../../utiles/base.entity';
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
 import { GoogleInfo } from './google.info.entity';
 import { KakaoInfo } from './kakao.info.entity';
@@ -25,6 +25,12 @@ export class Member extends Base {
     default: false,
   })
   isGeneratedEmail: boolean;
+
+  // @Column({
+  //   comment:
+  //     '생성된 유저의 이름, 쇼셜 로그인으로 가입 할 경우 해당 정보를 받아오거나 자동으로 생성',
+  // })
+  // nickName: string;
 
   @OneToMany(() => UserLog, (userLog) => userLog.account)
   userLogs: UserLog[];

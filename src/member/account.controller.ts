@@ -15,8 +15,6 @@ export class AccountController {
   }
   @Get('signup/:route')
   oAuthSignup(@Query() code, @Param('route') route) {
-    console.log(code);
-    console.log(route);
     switch (route) {
       case 'kakao':
         return this.accountService.kakaoSignUp(code.code);

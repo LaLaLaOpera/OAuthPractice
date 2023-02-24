@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
-import { passwordEncryption } from 'src/utiles/password.encryption';
+import { passwordEncryption } from '../utiles/password.encryption';
 import { Repository } from 'typeorm';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { Member } from './entities/account.entity';
+import { Member } from './entities/member.entity';
 import { GoogleInfo } from './entities/google.info.entity';
 import { KakaoInfo } from './entities/kakao.info.entity';
 import { NaverInfo } from './entities/naver.info.entity';
@@ -14,12 +14,13 @@ import { OAuthService } from './oauth.service';
 @Injectable()
 export class AccountService {
   constructor(
-    @InjectRepository(Member) private repo: Repository<Member>,
     @InjectRepository(KakaoInfo) private repoKa: Repository<KakaoInfo>,
     @InjectRepository(GoogleInfo) private repoGo: Repository<GoogleInfo>,
     @InjectRepository(NaverInfo) private repoNa: Repository<NaverInfo>,
+    @InjectRepository(Member) private repo: Repository<Member>,
     private readonly jwtService: JwtService,
     private readonly oAuthService: OAuthService,
+    private readonly _passwordEncryption: passwordEncryption,
   ) {}
   async signIn(createAccountDto: CreateAccountDto) {
     const account = await this.repo.findOne({
@@ -32,7 +33,7 @@ export class AccountService {
         password: true,
       },
     });
-    const result = await passwordEncryption.validation(
+    const result = await this._passwordEncryption.validation(
       createAccountDto.password,
       account,
     );
@@ -48,7 +49,7 @@ export class AccountService {
     if (dupCheck >= 0) {
       throw new Error('Dup Email');
     }
-    createAccountDto.password = await passwordEncryption.encryption(
+    createAccountDto.password = await this._passwordEncryption.encryption(
       createAccountDto.password,
     );
     const account = await this.repo.save(createAccountDto);
@@ -88,6 +89,7 @@ export class AccountService {
     return payload;
   }
   async loginOrCreate(type: string, snsId: string) {
+    console.log('here');
     const account: Member = await this.repo
       .createQueryBuilder('member')
       .leftJoinAndSelect(`member.${type}`, `${type}`)
@@ -98,7 +100,7 @@ export class AccountService {
     }
     const newAcc = this.repo.create({
       email: `${type}social${randomBytes(6).toString('hex')}@test.com`,
-      password: await passwordEncryption.encryption(
+      password: await this._passwordEncryption.encryption(
         `${randomBytes(32).toString('hex')}`,
       ),
     });

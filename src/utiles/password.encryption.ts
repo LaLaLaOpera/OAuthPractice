@@ -3,8 +3,8 @@ import { randomBytes, scrypt as _scrpyt } from 'crypto';
 
 const scrypt = promisify(_scrpyt);
 
-export const passwordEncryption = {
-  encryption: async (password) => {
+export class passwordEncryption {
+  async encryption(password) {
     const salt = randomBytes(8).toString('hex'); // => 16 characters long
 
     // Hash the salt and the password together
@@ -14,8 +14,8 @@ export const passwordEncryption = {
     const result = salt + '.' + hash.toString('hex');
 
     return result;
-  },
-  validation: async (password, client) => {
+  }
+  async validation(password, client) {
     const [salt, storedhash] = client.password.split('.');
     const hash = (await scrypt(password, salt, 32)) as Buffer;
 
@@ -23,5 +23,5 @@ export const passwordEncryption = {
       return false;
     }
     return true;
-  },
-};
+  }
+}
