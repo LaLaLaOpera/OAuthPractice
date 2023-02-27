@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
 import { passwordEncryption } from '../utiles/password.encryption';
-import { Repository } from 'typeorm';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { Member } from './entities/member.entity';
-import { GoogleInfo } from './entities/google.info.entity';
-import { KakaoInfo } from './entities/kakao.info.entity';
-import { NaverInfo } from './entities/naver.info.entity';
 import { OAuthService } from './oauth.service';
+import { MemberRepository } from './repository/member.repository';
+import { KakaoInfoRepository } from './repository/kakao.info.repository';
+import { GoogleInfoRepository } from './repository/google.info.repository';
+import { NaverInfoRepository } from './repository/naver.info.repository';
 
 @Injectable()
 export class AccountService {
   constructor(
-    @InjectRepository(KakaoInfo) private repoKa: Repository<KakaoInfo>,
-    @InjectRepository(GoogleInfo) private repoGo: Repository<GoogleInfo>,
-    @InjectRepository(NaverInfo) private repoNa: Repository<NaverInfo>,
-    @InjectRepository(Member) private repo: Repository<Member>,
     private readonly jwtService: JwtService,
     private readonly oAuthService: OAuthService,
     private readonly _passwordEncryption: passwordEncryption,
+    private repoKa: KakaoInfoRepository,
+    private repoGo: GoogleInfoRepository,
+    private repoNa: NaverInfoRepository,
+    private repo: MemberRepository,
   ) {}
   async signIn(createAccountDto: CreateAccountDto) {
     const account = await this.repo.findOne({
@@ -88,13 +87,9 @@ export class AccountService {
     const payload = this.tokenIssue(account);
     return payload;
   }
-  async loginOrCreate(type: string, snsId: string) {
+  async loginOrCreate(type: string, snsId: string): Promise<Member> {
     console.log('here');
-    const account: Member = await this.repo
-      .createQueryBuilder('member')
-      .leftJoinAndSelect(`member.${type}`, `${type}`)
-      .where(`${type}.snsId =:id`, { id: snsId })
-      .getOne();
+    const account: Member = await this.repo.findByTypeAndId(type, snsId);
     if (account?.[type][0].snsId == snsId) {
       return account;
     }
