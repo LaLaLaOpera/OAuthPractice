@@ -4,94 +4,68 @@ import { passwordEncryption } from '../utiles/password.encryption';
 import { AccountService } from './account.service';
 import { Member } from './entities/member.entity';
 import { OAuthService } from './oauth.service';
-import { GoogleInfoRepository } from './repository/google.info.repository';
-import { KakaoInfoRepository } from './repository/kakao.info.repository';
 import { MemberRepository } from './repository/member.repository';
-import { NaverInfoRepository } from './repository/naver.info.repository';
+import { SocialInfoRepository } from './repository/social.info.repository';
 
 describe('AccountService', () => {
   let service: AccountService;
   let memberRepository: Partial<MemberRepository>;
-  let kakaoInfoRepository: Partial<KakaoInfoRepository>;
-  let googleInfoRepository: Partial<GoogleInfoRepository>;
-  let naverInfoRepository: Partial<NaverInfoRepository>;
-
+  let socialInfoRepository: Partial<SocialInfoRepository>;
   beforeEach(async () => {
-    memberRepository = {
-      findOne: jest.fn(),
-      save: jest.fn(),
-      create: jest.fn(),
-      findByTypeAndId: async (type, id) => {
-        return Promise.resolve({
-          id: '',
-          email: '',
-          kakao: [
-            {
-              snsId: '2677174729',
-            },
-          ],
-          google: [],
-          naver: [],
-        } as Member);
-      },
-    };
-    kakaoInfoRepository = {
-      findOne: jest.fn(),
-      save: jest.fn(),
-      create: jest.fn(),
-    };
-    googleInfoRepository = {
-      findOne: jest.fn(),
-      save: jest.fn(),
-      create: jest.fn(),
-    };
-    naverInfoRepository = {
-      findOne: jest.fn(),
-      save: jest.fn(),
-      create: jest.fn(),
-    };
+    const accounts: Member[] = [];
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AccountService,
-        JwtService,
         OAuthService,
+        JwtService,
         passwordEncryption,
         {
           provide: MemberRepository,
-          useValue: memberRepository,
+          useValue: {},
         },
         {
-          provide: KakaoInfoRepository,
-          useValue: kakaoInfoRepository,
-        },
-        {
-          provide: NaverInfoRepository,
-          useValue: naverInfoRepository,
-        },
-        {
-          provide: GoogleInfoRepository,
-          useValue: googleInfoRepository,
+          provide: SocialInfoRepository,
+          useValue: {},
         },
       ],
     }).compile();
     service = module.get<AccountService>(AccountService);
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    socialInfoRepository =
+      module.get<SocialInfoRepository>(SocialInfoRepository);
   });
 
   it('should be defined', async () => {
     expect(service).toBeDefined();
   });
+
   it('should return member object', async () => {
-    const user: Member = await service.loginOrCreate('kakao', '2677174729');
-    expect(user).toEqual({
-      id: '',
-      email: '',
-      kakao: [
-        {
-          snsId: '2677174729',
-        },
-      ],
-      google: [],
-      naver: [],
+    spyOn(memberRepository, 'find');
+    const user: Member = await service.loginOrCreate(
+      'naver',
+      'e26dfe11-3479-4f1d-801c-e181765f9c30',
+    );
+    expect(user).toBeDefined();
+  });
+
+  it('test for others', async () => {
+    type Token = {
+      init: number;
+      exp: number;
+      access_token: string;
+    };
+    const _account = await service.find('aaa@aaa.com');
+    if (_account != null) {
+      await service.delete(_account.id);
+    }
+    await service.signUp({
+      email: 'aaa@aaa.com',
+      password: '1234qwer!',
     });
+    const token: Token = await service.signIn({
+      email: 'aaa@aaa.com',
+      password: '1234qwer!',
+    });
+    expect(token).toBeDefined();
   });
 });

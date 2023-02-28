@@ -14,16 +14,7 @@ export class AccountController {
     return this.accountService.signUp(createAccountDto);
   }
   @Get('signup/:route')
-  oAuthSignup(@Query() code, @Param('route') route) {
-    switch (route) {
-      case 'kakao':
-        return this.accountService.kakaoSignUp(code.code);
-      case 'google':
-        return this.accountService.googleSignUp(code.code);
-      case 'naver':
-        return this.accountService.naverSignUp(code.code);
-      default:
-        return 'unknown parameter';
-    }
+  oAuthSignup(@Query('code') code, @Param('route') route) {
+    return this.accountService.oAuthSignUp(code, route);
   }
 }

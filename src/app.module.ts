@@ -9,9 +9,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserLog } from './member/entities/user.log.entity';
-import { KakaoInfo } from './member/entities/kakao.info.entity';
-import { GoogleInfo } from './member/entities/google.info.entity';
-import { NaverInfo } from './member/entities/naver.info.entity';
+import { SocialInfo } from './member/entities/social.info.entity';
 import { JwtMiddleware } from './middleware/jwt.middleware';
 @Module({
   imports: [
@@ -35,7 +33,7 @@ import { JwtMiddleware } from './middleware/jwt.middleware';
           username: config.get<string>('DB_USER'),
           password: config.get<string>('DB_PASSWORD'),
           port: 5555,
-          entities: [Member, UserLog, KakaoInfo, GoogleInfo, NaverInfo],
+          entities: [Member, UserLog, SocialInfo],
           synchronize: true, // false가 안전함
         };
       },

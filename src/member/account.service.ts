@@ -6,9 +6,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { Member } from './entities/member.entity';
 import { OAuthService } from './oauth.service';
 import { MemberRepository } from './repository/member.repository';
-import { KakaoInfoRepository } from './repository/kakao.info.repository';
-import { GoogleInfoRepository } from './repository/google.info.repository';
-import { NaverInfoRepository } from './repository/naver.info.repository';
+import { SocialInfoRepository } from './repository/social.info.repository';
 
 @Injectable()
 export class AccountService {
@@ -16,22 +14,33 @@ export class AccountService {
     private readonly jwtService: JwtService,
     private readonly oAuthService: OAuthService,
     private readonly _passwordEncryption: passwordEncryption,
-    private repoKa: KakaoInfoRepository,
-    private repoGo: GoogleInfoRepository,
-    private repoNa: NaverInfoRepository,
+    // @InjectRepository(SocialInfo)
+    // private repoSo: Repository<SocialInfo>,
+    private repoSo: SocialInfoRepository,
+    // @InjectRepository(Member)
+    // private repo: Repository<Member>,
     private repo: MemberRepository,
   ) {}
-  async signIn(createAccountDto: CreateAccountDto) {
-    const account = await this.repo.findOne({
+  async delete(id) {
+    await this.repo.delete(id);
+  }
+  async find(email) {
+    const result = await this.repo.find({
       where: {
-        email: createAccountDto.email,
+        email: email,
       },
       select: {
-        id: true,
         email: true,
         password: true,
+        id: true,
       },
     });
+    if (result != null) {
+      return result[0];
+    }
+  }
+  async signIn(createAccountDto: CreateAccountDto) {
+    const account = await this.find(createAccountDto.email);
     const result = await this._passwordEncryption.validation(
       createAccountDto.password,
       account,
@@ -45,7 +54,7 @@ export class AccountService {
     const dupCheck = await this.repo.countBy({
       email: createAccountDto.email,
     });
-    if (dupCheck >= 0) {
+    if (dupCheck > 0) {
       throw new Error('Dup Email');
     }
     createAccountDto.password = await this._passwordEncryption.encryption(
@@ -54,79 +63,56 @@ export class AccountService {
     const account = await this.repo.save(createAccountDto);
     return this.tokenIssue(account);
   }
-  async naverSignUp(code: string) {
-    const info = await this.oAuthService.authAccessToken('naver', code);
-    const data = await this.oAuthService.requestUserData(
-      'naver',
-      info.data.access_token,
-    );
-    console.log(data);
 
-    const account = await this.loginOrCreate('naver', data.response.id);
-    const payload = this.tokenIssue(account);
-    return payload;
-  }
-  async googleSignUp(code: string) {
-    const info = await this.oAuthService.authAccessToken('google', code);
-    const decode = this.jwtService.decode(info.data.id_token);
-    // const data = await this.oAuthService.requestUserData(
-    //   'google',
-    //   info.data.access_token,
-    // );
-    const account = await this.loginOrCreate('google', decode.sub);
-    const payload = this.tokenIssue(account);
-    return payload;
-  }
-  async kakaoSignUp(code: string) {
-    const info = await this.oAuthService.authAccessToken('kakao', code);
+  async oAuthSignUp(code: string, type: string) {
+    const info = await this.oAuthService.authAccessToken(type, code);
     const data = await this.oAuthService.requestUserData(
-      'kakao',
+      type,
       info.data.access_token,
     );
-    const account = await this.loginOrCreate('kakao', data.id);
+    let id;
+    switch (type) {
+      case 'google':
+        id = data.sub;
+        break;
+      case 'kakao':
+        id = data.id;
+        break;
+      case 'naver':
+        id = data.response.id;
+        break;
+      default:
+        throw Error('unknow provider');
+    }
+    const account = await this.loginOrCreate(type, id);
     const payload = this.tokenIssue(account);
     return payload;
   }
-  async loginOrCreate(type: string, snsId: string): Promise<Member> {
-    console.log('here');
-    const account: Member = await this.repo.findByTypeAndId(type, snsId);
-    if (account?.[type][0].snsId == snsId) {
-      return account;
+  async loginOrCreate(type: string, snsId: string) {
+    const account = await this.repo.find({
+      where: {
+        socialInfo: {
+          snsId: snsId,
+          type: type,
+        },
+      },
+    });
+    if (account != null) {
+      return account[0];
     }
-    const newAcc = this.repo.create({
+    const newAcc: Member = await this.repo.save({
       email: `${type}social${randomBytes(6).toString('hex')}@test.com`,
       password: await this._passwordEncryption.encryption(
         `${randomBytes(32).toString('hex')}`,
       ),
     });
-
-    // if (snsId?.email != null) {
-    //   newAcc.email = snsId?.email;
-    // }
-    const _account = await this.repo.save(newAcc);
-    switch (type) {
-      case 'kakao':
-        await this.repoKa.save({
-          snsId: snsId,
-          account: newAcc,
-        });
-        break;
-      case 'naver':
-        await this.repoNa.save({
-          snsId: snsId,
-          account: newAcc,
-        });
-        break;
-      case 'google':
-        await this.repoGo.save({
-          snsId: snsId,
-          account: newAcc,
-        });
-        break;
-      default:
-        throw new Error('invalid social login');
-    }
-    return _account;
+    const social = await this.repoSo.save({
+      account: newAcc,
+      snsId: snsId,
+      type: type,
+    });
+    //const _account = await this.repo.save(newAcc);
+    return newAcc;
   }
   tokenIssue(account: Member) {
     const init = new Date().getTime();

@@ -1,8 +1,6 @@
 import { Base } from '../../utiles/base.entity';
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
-import { GoogleInfo } from './google.info.entity';
-import { KakaoInfo } from './kakao.info.entity';
-import { NaverInfo } from './naver.info.entity';
+import { SocialInfo } from './social.info.entity';
 import { UserLog } from './user.log.entity';
 
 @Entity()
@@ -35,12 +33,6 @@ export class Member extends Base {
   @OneToMany(() => UserLog, (userLog) => userLog.account)
   userLogs: UserLog[];
 
-  @OneToMany(() => KakaoInfo, (a) => a.account)
-  kakao: KakaoInfo[];
-
-  @OneToMany(() => GoogleInfo, (g) => g.account)
-  google: GoogleInfo[];
-
-  @OneToMany(() => NaverInfo, (n) => n.account)
-  naver: NaverInfo[];
+  @OneToMany(() => SocialInfo, (n) => n.account)
+  socialInfo: SocialInfo[];
 }
