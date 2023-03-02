@@ -14,11 +14,7 @@ export class AccountService {
     private readonly jwtService: JwtService,
     private readonly oAuthService: OAuthService,
     private readonly _passwordEncryption: passwordEncryption,
-    // @InjectRepository(SocialInfo)
-    // private repoSo: Repository<SocialInfo>,
     private repoSo: SocialInfoRepository,
-    // @InjectRepository(Member)
-    // private repo: Repository<Member>,
     private repo: MemberRepository,
   ) {}
   async delete(id) {
@@ -65,11 +61,8 @@ export class AccountService {
   }
 
   async oAuthSignUp(code: string, type: string) {
-    const info = await this.oAuthService.authAccessToken(type, code);
-    const data = await this.oAuthService.requestUserData(
-      type,
-      info.data.access_token,
-    );
+    const access_token = await this.oAuthService.authAccessToken(type, code);
+    const data = await this.oAuthService.requestUserData(type, access_token);
     let id;
     switch (type) {
       case 'google':
@@ -89,7 +82,7 @@ export class AccountService {
     return payload;
   }
   async loginOrCreate(type: string, snsId: string) {
-    const account = await this.repo.find({
+    const account = await this.repo.findOne({
       where: {
         socialInfo: {
           snsId: snsId,
@@ -98,7 +91,7 @@ export class AccountService {
       },
     });
     if (account != null) {
-      return account[0];
+      return account;
     }
     const newAcc: Member = await this.repo.save({
       email: `${type}social${randomBytes(6).toString('hex')}@test.com`,

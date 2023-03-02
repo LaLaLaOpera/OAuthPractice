@@ -1,44 +1,43 @@
-// import { AccountController } from './account.controller';
-// import { JwtService } from '@nestjs/jwt';
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { passwordEncryption } from '../utiles/password.encryption';
-// import { AccountService } from './account.service';
-// import { OAuthService } from './oauth.service';
-// import { AppModule } from '../app.module';
-// import { Member } from './entities/member.entity';
-// import { getRepositoryToken } from '@nestjs/typeorm';
-// import { SocialInfo } from './entities/social.info.entity';
-// describe('AccountController', () => {
-//   let controller: AccountController;
-//   const mockRepository = () => ({
-//     findOne: jest.fn(),
-//     save: jest.fn(),
-//     create: jest.fn(),
-//   });
+import { Test, TestingModule } from '@nestjs/testing';
+import { AccountService } from './account.service';
+import { AppModule } from '../app.module';
+import { AccountController } from './account.controller';
+describe('AccountController', () => {
+  let controller: AccountController;
+  let accountService: Partial<AccountService>;
+  let module: TestingModule;
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       imports: [AppModule],
-//       controllers: [AccountController],
-//       providers: [
-//         AccountService,
-//         JwtService,
-//         OAuthService,
-//         passwordEncryption,
-//         {
-//           provide: getRepositoryToken(Member),
-//           useValue: mockRepository(),
-//         },
-//         {
-//           provide: getRepositoryToken(SocialInfo),
-//           useValue: mockRepository(),
-//         },
-//       ],
-//     }).compile();
-//     controller = module.get<AccountController>(AccountController);
-//   });
+  beforeEach(async () => {
+    accountService = {};
+    module = await Test.createTestingModule({
+      imports: [AppModule],
+      controllers: [AccountController],
+      providers: [
+        {
+          provide: AccountService,
+          useValue: accountService,
+        },
+      ],
+    }).compile();
+    controller = module.get<AccountController>(AccountController);
+    accountService = module.get<AccountService>(AccountService);
+  });
+  afterEach(async () => {
+    await module.close();
+  });
 
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//   });
-// });
+  test('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+  test('test OAuth Function', async () => {
+    const oauth = jest.spyOn(AccountService.prototype, 'oAuthSignUp');
+    oauth.mockResolvedValue({
+      init: 166666666,
+      exp: 155555556,
+      access_token: 'aaa',
+    });
+    const token = await controller.oAuthSignup('a', 'b');
+    expect(oauth).toBeCalledTimes(1);
+    expect(token).toBeDefined;
+  });
+});

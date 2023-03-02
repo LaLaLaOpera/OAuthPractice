@@ -18,17 +18,28 @@ export class Member extends Base {
   password: string;
 
   @Column({
-    comment:
-      '자동 생성된 임의 이메일 인지를 판단, OAuth에서 email param을 받거나 직접 생성한 계정일 경우 체크가 된다.',
+    comment: '자동 생성된 임의 이메일 인지를 판단하여 체크가 된다.',
     default: false,
   })
   isGeneratedEmail: boolean;
 
-  // @Column({
-  //   comment:
-  //     '생성된 유저의 이름, 쇼셜 로그인으로 가입 할 경우 해당 정보를 받아오거나 자동으로 생성',
-  // })
-  // nickName: string;
+  @Column({
+    comment: '핸드폰 번호',
+    nullable: true,
+  })
+  phone: string;
+
+  @Column({
+    comment:
+      '생성된 유저의 이름, 쇼셜 로그인으로 가입 할 경우 해당 정보를 받아오거나 자동으로 생성',
+    default: '신출내기 모험가',
+  })
+  nickName: string;
+
+  @Column({
+    comment: '본인 인증 여부를 판단하는 컬럼',
+  })
+  isAuthorized: boolean;
 
   @OneToMany(() => UserLog, (userLog) => userLog.account)
   userLogs: UserLog[];

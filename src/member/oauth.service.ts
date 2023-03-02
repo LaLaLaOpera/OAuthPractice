@@ -36,7 +36,7 @@ export class OAuthService {
     } catch (err) {
       console.log(err);
     }
-    return info;
+    return info?.data?.access_token;
   }
   async requestUserData(type: string, access_token: string) {
     console.log(type, access_token);
