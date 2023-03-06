@@ -17,4 +17,8 @@ export class AccountController {
   oAuthSignup(@Query('code') code, @Param('route') route) {
     return this.accountService.oAuthSignUp(code, route);
   }
+  @Get('member/:id')
+  getMemberInfo(@Param('id') id) {
+    return this.accountService.get(id);
+  }
 }

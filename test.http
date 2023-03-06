@@ -78,3 +78,16 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoibXJBQkMiLCJyb2xlIjoiTWFuYWdlciIsImFsbG93IjpbInRlc3RGZWF0dXJlIiwidGVzdEZlYXR1cmUyIl19LCJpYXQiOjE2NzM0MzA0MDh9.i7Ti3obCigqO-2jJA6FKSm0uagqv6z-uHIf5H6dtbH4
 
 {}
+
+
+### ID
+GET http://localhost:3000/account/member/d0987efc-763b-4a47-bfea-4a86bd48ff0e
+Content-Type: application/json
+
+{}
+
+#### Payment Post
+POST http://localhost:3000/payment
+Content-Type: application/json
+
+{}

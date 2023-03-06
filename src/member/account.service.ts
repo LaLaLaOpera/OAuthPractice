@@ -123,4 +123,24 @@ export class AccountService {
     );
     return { init, exp, access_token };
   }
+  async get(id: string) {
+    const member = await this.repo
+      .createQueryBuilder('member')
+      .select(['member.id', 'member.email', 'member.phone'])
+      //.leftJoinAndSelect('member.groupToMember', 'gtm')
+      .leftJoin('member.groupToMember', 'gtm')
+      //.leftJoinAndSelect('gtm.group', 'group')
+      .leftJoin('gtm.group', 'group')
+      .addSelect('array_agg(group.name) as group_names')
+      .where('member.id = :id', { id: id })
+      .groupBy('member.id')
+      .getRawMany();
+
+    // const group = member.groupToMember.map((s) => {
+    //   return s.group.name;
+    // });
+    // delete member.groupToMember;
+    // member['group'] = group;
+    return { member };
+  }
 }

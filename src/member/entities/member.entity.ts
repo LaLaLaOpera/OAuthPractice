@@ -2,6 +2,7 @@ import { Base } from '../../utiles/base.entity';
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
 import { SocialInfo } from './social.info.entity';
 import { UserLog } from './user.log.entity';
+import { GroupToMember } from './group.to.member.entity';
 
 @Entity()
 @Unique(['email'])
@@ -38,6 +39,7 @@ export class Member extends Base {
 
   @Column({
     comment: '본인 인증 여부를 판단하는 컬럼',
+    default: false,
   })
   isAuthorized: boolean;
 
@@ -46,4 +48,7 @@ export class Member extends Base {
 
   @OneToMany(() => SocialInfo, (n) => n.account)
   socialInfo: SocialInfo[];
+
+  @OneToMany(() => GroupToMember, (target) => target.member)
+  groupToMember: GroupToMember[];
 }

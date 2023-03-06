@@ -7,14 +7,4 @@ export class MemberRepository extends Repository<Member> {
   constructor(private dataSource: DataSource) {
     super(Member, dataSource.createEntityManager());
   }
-  //   async findWithIdAndType(type, id) {
-  //     return await this.findOne({
-  //       where: {
-  //         socialInfo: {
-  //           type: type,
-  //           snsId: id,
-  //         },
-  //       },
-  //     });
-  //   }
 }
