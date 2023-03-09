@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Ip,
+  Param,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 
@@ -14,11 +23,12 @@ export class AccountController {
     return this.accountService.signUp(createAccountDto);
   }
   @Get('signup/:route')
-  oAuthSignup(@Query('code') code, @Param('route') route) {
+  oAuthSignup(@Query('code') code, @Param('route') route, @Ip() ip) {
+    console.log(ip);
     return this.accountService.oAuthSignUp(code, route);
   }
-  @Get('member/:id')
-  getMemberInfo(@Param('id') id) {
-    return this.accountService.get(id);
+  @Get()
+  getAccountInfo(@Req() req) {
+    return this.accountService.get(req);
   }
 }

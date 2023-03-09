@@ -51,6 +51,7 @@ export class OAuthService {
         Authorization: `Bearer ${access_token}`,
       },
     });
+    console.log(data);
     return data;
   }
 }

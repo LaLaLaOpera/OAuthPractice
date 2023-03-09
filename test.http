@@ -81,10 +81,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkI
 
 
 ### ID
-GET http://localhost:3000/account/member/d0987efc-763b-4a47-bfea-4a86bd48ff0e
+GET http://localhost:3000/account/d0987efc-763b-4a47-bfea-4a86bd48ff0e
 Content-Type: application/json
 
 {}
+
+### signup
+POST http://localhost:3000/account/signup
+Content-Type: application/json
+
+{
+    "email" : "test@email.com",
+    "password" : "123123",
+    "role" : "seller"
+}
+
+###SignIn
+POST http://localhost:3000/account/signin
+Content-Type: application/json
+
+{
+    "email" : "test@email.com",
+    "password" : "123123",
+    "role" : "seller"
+}
+
+### USER DETAIL
+GET http://localhost:3000/account
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiYWJjMzRiZWUtMDQ5ZS00NjQxLThmNzMtNjNiYzc5MDcyMDVlIn0sImlhdCI6MTY3ODM0Mzc3MCwiZXhwIjoxNjc4MzQ3MzcwfQ.-Sst4o6NtEVDn6vkExGFoJ-e9iycpHXAc93-kxvNZb0
 
 #### Payment Post
 POST http://localhost:3000/payment

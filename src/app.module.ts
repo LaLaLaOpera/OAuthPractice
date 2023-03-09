@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { AccountModule } from './member/account.module';
+import { AccountModule } from './account/account.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -9,6 +9,10 @@ import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtMiddleware } from './middleware/jwt.middleware';
 import { PaymentModule } from './payment/payment.module';
+import { SellerModule } from './seller/seller.module';
+import { AccountController } from './account/account.controller';
+//import { AccessKeyMiddleware } from './middleware/accesskey.middleware';
+import { TenantModule } from './tenant/tenant.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,13 +42,17 @@ import { PaymentModule } from './payment/payment.module';
     }),
     AccountModule,
     PaymentModule,
+    SellerModule,
+    TenantModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware);
-    // consumer.apply(AccessKeyMiddleware).forRoutes('api');
+    consumer
+      .apply(JwtMiddleware)
+      .exclude('account/signup', 'account/signin')
+      .forRoutes(AccountController);
   }
 }

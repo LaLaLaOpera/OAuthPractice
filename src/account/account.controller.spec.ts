@@ -36,7 +36,7 @@ describe('AccountController', () => {
       exp: 155555556,
       access_token: 'aaa',
     });
-    const token = await controller.oAuthSignup('a', 'b');
+    const token = await controller.oAuthSignup('a', 'b', '');
     expect(oauth).toBeCalledTimes(1);
     expect(token).toBeDefined;
   });

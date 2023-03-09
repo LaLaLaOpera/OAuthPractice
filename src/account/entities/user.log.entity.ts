@@ -5,17 +5,17 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Member } from './member.entity';
+import { Account } from './account.entity';
 
 @Entity()
 export class UserLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Member, (Member) => Member.userLogs, {
+  @ManyToOne(() => Account, (Account) => Account.userLogs, {
     createForeignKeyConstraints: false,
   })
-  account: Member;
+  account: Account;
 
   @CreateDateColumn({
     type: 'timestamp with time zone',

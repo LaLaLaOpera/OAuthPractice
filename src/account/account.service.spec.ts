@@ -7,14 +7,14 @@ import {
 } from '../utiles/mock.repository';
 import { passwordEncryption } from '../utiles/password.encryption';
 import { AccountService } from './account.service';
-import { Member } from './entities/member.entity';
+import { Account } from './entities/account.entity';
 import { OAuthService } from './oauth.service';
-import { MemberRepository } from './repository/member.repository';
+import { AccountRepository } from './repository/account.repository';
 import { SocialInfoRepository } from './repository/social.info.repository';
 import { AppModule } from '../app.module';
 describe('AccountService', () => {
   let service: AccountService;
-  let memberRepository: MockRepository<MemberRepository>;
+  let accountRepository: MockRepository<AccountRepository>;
   let socialInfoRepository: MockRepository<SocialInfoRepository>;
   let module: TestingModule;
   beforeEach(async () => {
@@ -26,8 +26,8 @@ describe('AccountService', () => {
         JwtService,
         passwordEncryption,
         {
-          provide: getRepositoryToken(MemberRepository),
-          useValue: MockRepositoryFactory.getMockRepository(MemberRepository),
+          provide: getRepositoryToken(AccountRepository),
+          useValue: MockRepositoryFactory.getMockRepository(AccountRepository),
         },
         {
           provide: SocialInfoRepository,
@@ -37,7 +37,7 @@ describe('AccountService', () => {
       ],
     }).compile();
     service = module.get<AccountService>(AccountService);
-    memberRepository = module.get<MemberRepository>(MemberRepository);
+    accountRepository = module.get<AccountRepository>(AccountRepository);
     socialInfoRepository =
       module.get<SocialInfoRepository>(SocialInfoRepository);
     //oAuthService = module.get<OAuthService>(OAuthService);
@@ -50,8 +50,13 @@ describe('AccountService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return member object', async () => {
-    const user: Member = await service.loginOrCreate('kakao', '2677174729');
+  it('should return Account object', async () => {
+    const user: Account = await service.loginOrCreate(
+      'kakao',
+      '2677174729',
+      '',
+      '',
+    );
     expect(user).toBeDefined();
   });
 
@@ -68,10 +73,12 @@ describe('AccountService', () => {
     await service.signUp({
       email: 'aaa@aaa.com',
       password: '1234qwer!',
+      role: '',
     });
     const token: Token = await service.signIn({
       email: 'aaa@aaa.com',
       password: '1234qwer!',
+      role: '',
     });
     expect(token).toBeDefined();
   });
@@ -79,6 +86,7 @@ describe('AccountService', () => {
     await service.signUp({
       email: 'aaa@aab.com',
       password: '1234qwer!',
+      role: '',
     });
     const account = await service.find('aaa@aab.com');
     await service.delete(account.id);

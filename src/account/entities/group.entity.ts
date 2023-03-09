@@ -1,6 +1,6 @@
 import { Base } from '../../utiles/base.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { GroupToMember } from './group.to.member.entity';
+import { GroupToAccount } from './group.to.account.entity';
 
 @Entity({})
 export class Group extends Base {
@@ -9,6 +9,6 @@ export class Group extends Base {
   })
   name: string;
 
-  @OneToMany(() => GroupToMember, (target) => target.group)
-  groupToMember: GroupToMember[];
+  @OneToMany(() => GroupToAccount, (target) => target.group)
+  groupToAccount: GroupToAccount[];
 }
