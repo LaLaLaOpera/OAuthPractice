@@ -20,6 +20,7 @@
     "test:e2e": "corss=env NODE_ENV=test jest --config ./test/jest-e2e.json --maxWorkers=1"
   },
   "dependencies": {
+    "@avallone-io/rls": "^2.0.4",
     "@google-analytics/data": "^3.1.2",
     "@nestjs/common": "^9.2.1",
     "@nestjs/config": "^2.3.1",

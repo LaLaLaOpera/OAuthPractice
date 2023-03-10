@@ -91,9 +91,9 @@ POST http://localhost:3000/account/signup
 Content-Type: application/json
 
 {
-    "email" : "test@email.com",
+    "email" : "test2@email.com",
     "password" : "123123",
-    "role" : "seller"
+    "role" : "Buyer"
 }
 
 ###SignIn
@@ -101,15 +101,33 @@ POST http://localhost:3000/account/signin
 Content-Type: application/json
 
 {
-    "email" : "test@email.com",
+    "email" : "test2@email.com",
     "password" : "123123",
-    "role" : "seller"
+    "role" : "Buyer"
 }
 
 ### USER DETAIL
 GET http://localhost:3000/account
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiYWJjMzRiZWUtMDQ5ZS00NjQxLThmNzMtNjNiYzc5MDcyMDVlIn0sImlhdCI6MTY3ODM0Mzc3MCwiZXhwIjoxNjc4MzQ3MzcwfQ.-Sst4o6NtEVDn6vkExGFoJ-e9iycpHXAc93-kxvNZb0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiNWVhMWIwM2MtNmYxNS00MjdkLWI1MjAtODk1NmQ0MjJkZjc3In0sImlhdCI6MTY3ODQzMTM2OSwiZXhwIjoxNjc4NDM0OTY5fQ.ztTP77k1zdjXn9P9_7GQWj2l0U5FAEJvOEZUTfX4Vp0
+
+### USER PUT ADDRESS
+PUT http://localhost:3000/account/5ea1b03c-6f15-427d-b520-8956d422df77/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiNWVhMWIwM2MtNmYxNS00MjdkLWI1MjAtODk1NmQ0MjJkZjc3In0sImlhdCI6MTY3ODQzMTM2OSwiZXhwIjoxNjc4NDM0OTY5fQ.ztTP77k1zdjXn9P9_7GQWj2l0U5FAEJvOEZUTfX4Vp0
+
+{
+  "zipCode" : "124",
+  "address" : "123",
+  "addressDetail" : "123",
+  "isMain" : true 
+}
+
+### GET USER ADDRESSES
+GET http://localhost:3000/account/5ea1b03c-6f15-427d-b520-8956d422df77/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiNWVhMWIwM2MtNmYxNS00MjdkLWI1MjAtODk1NmQ0MjJkZjc3In0sImlhdCI6MTY3ODQzMTM2OSwiZXhwIjoxNjc4NDM0OTY5fQ.ztTP77k1zdjXn9P9_7GQWj2l0U5FAEJvOEZUTfX4Vp0
+
 
 #### Payment Post
 POST http://localhost:3000/payment

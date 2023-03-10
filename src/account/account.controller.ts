@@ -3,8 +3,11 @@ import {
   Controller,
   Get,
   Ip,
+  NotAcceptableException,
   Param,
+  ParseUUIDPipe,
   Post,
+  Put,
   Query,
   Req,
 } from '@nestjs/common';
@@ -30,5 +33,32 @@ export class AccountController {
   @Get()
   getAccountInfo(@Req() req) {
     return this.accountService.get(req);
+  }
+
+  @Get('/:accountId/address')
+  getUSERADDRESS(
+    @Req() req,
+    @Param('accountId', new ParseUUIDPipe()) accountId,
+  ) {
+    if (req['user'].id != accountId) {
+      console.log(req['user']);
+      console.log(accountId);
+      throw new NotAcceptableException('Not Authorized');
+    }
+    return this.accountService.getAddresses(accountId);
+  }
+
+  @Put('/:accountId/address')
+  addAddress(
+    @Req() req,
+    @Param('accountId', new ParseUUIDPipe()) accountId,
+    @Body() createAccountDto: CreateAccountDto,
+  ) {
+    if (req['user'].id != accountId) {
+      console.log(req['user']);
+      console.log(accountId);
+      throw new NotAcceptableException('Not Authorized');
+    }
+    return this.accountService.addAddress(accountId, createAccountDto);
   }
 }

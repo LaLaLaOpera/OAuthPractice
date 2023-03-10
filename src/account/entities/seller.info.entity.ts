@@ -1,12 +1,13 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Base } from '../../utiles/base.entity';
+import { Account } from './account.entity';
 
 @Entity()
-export class Seller extends Base {
+export class SellerInfo extends Base {
   @Column({
     comment: '사업자 등록증 이미지의 URL',
   })
-  businessRegistrationUrl: string;
+  businessRegistrationURL: string;
 
   @Column({
     comment: '사업자 등록 번호',
@@ -44,14 +45,26 @@ export class Seller extends Base {
   csName: string;
 
   @Column({
+    comment: '판매 사이트 URL',
+    default: '',
+  })
+  storeURL: string;
+
+  @Column({
     comment: 'CS 담당자 연락처',
   })
   csPhone: string;
 
   @Column({
-    comment: '회원 ID',
+    comment: 'CS 담당자 유선 전화',
+    default: '',
   })
-  accountId: string;
+  csLandPhone: string;
+
+  @ManyToOne(() => Account, (target) => target.sellerInfos, {
+    createForeignKeyConstraints: false,
+  })
+  account: Account;
 
   @Column({
     comment: '관리자에게 인증받은 회원인지를 구분',

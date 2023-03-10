@@ -9,11 +9,14 @@ import { OAuthService } from './oauth.service';
 import { passwordEncryption } from '../utiles/password.encryption';
 import { AccountRepository } from './repository/account.repository';
 import { SocialInfoRepository } from './repository/social.info.repository';
+import { AddressService } from './address.service';
+import { Address } from './entities/address.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Account, SocialInfo])],
+  imports: [TypeOrmModule.forFeature([Account, SocialInfo, Address])],
   controllers: [AccountController],
   providers: [
+    AddressService,
     AccountService,
     JwtService,
     OAuthService,

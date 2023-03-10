@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  // RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { AccountModule } from './account/account.module';
@@ -9,10 +14,7 @@ import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtMiddleware } from './middleware/jwt.middleware';
 import { PaymentModule } from './payment/payment.module';
-import { SellerModule } from './seller/seller.module';
 import { AccountController } from './account/account.controller';
-//import { AccessKeyMiddleware } from './middleware/accesskey.middleware';
-import { TenantModule } from './tenant/tenant.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,6 +37,7 @@ import { TenantModule } from './tenant/tenant.module';
           username: config.get<string>('DB_USER'),
           password: config.get<string>('DB_PASSWORD'),
           port: 5555,
+          schema: 'public',
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true, // false가 안전함
         };
@@ -42,8 +45,6 @@ import { TenantModule } from './tenant/tenant.module';
     }),
     AccountModule,
     PaymentModule,
-    SellerModule,
-    TenantModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -54,5 +55,8 @@ export class AppModule implements NestModule {
       .apply(JwtMiddleware)
       .exclude('account/signup', 'account/signin')
       .forRoutes(AccountController);
+    // consumer
+    //   .apply(TenantMiddleware)
+    //   .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { passwordEncryption } from '../utiles/password.encryption';
+import { AddressService } from './address.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { Account } from './entities/account.entity';
 import { OAuthService } from './oauth.service';
@@ -11,12 +12,26 @@ import { SocialInfoRepository } from './repository/social.info.repository';
 @Injectable()
 export class AccountService {
   constructor(
+    private readonly addressService: AddressService,
     private readonly jwtService: JwtService,
     private readonly oAuthService: OAuthService,
     private readonly _passwordEncryption: passwordEncryption,
     private repoSo: SocialInfoRepository,
     private repo: AccountRepository,
   ) {}
+  async getAddresses(accountId) {
+    return await this.addressService.get(accountId);
+  }
+  async addAddress(id, params) {
+    console.log(id);
+    const account = await this.repo.findOne({
+      where: {
+        id: id,
+      },
+    });
+    const address = await this.addressService.put(account, params);
+    return address;
+  }
   async delete(id) {
     await this.repo.delete(id);
   }
