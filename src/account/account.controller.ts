@@ -61,4 +61,8 @@ export class AccountController {
     }
     return this.accountService.addAddress(accountId, createAccountDto);
   }
+  @Get('/test')
+  test() {
+    return this.accountService.test();
+  }
 }

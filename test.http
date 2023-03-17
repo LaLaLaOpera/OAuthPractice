@@ -109,7 +109,7 @@ Content-Type: application/json
 ### USER DETAIL
 GET http://localhost:3000/account
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiNWVhMWIwM2MtNmYxNS00MjdkLWI1MjAtODk1NmQ0MjJkZjc3In0sImlhdCI6MTY3ODQzMTM2OSwiZXhwIjoxNjc4NDM0OTY5fQ.ztTP77k1zdjXn9P9_7GQWj2l0U5FAEJvOEZUTfX4Vp0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiMTcxZmQ3NmUtOTNmZC00MjU0LTk5MWQtNjU3YjQzMmZlY2Y4In0sImlhdCI6MTY3ODY4MjM2NiwiZXhwIjoxNjc4Njg1OTY2fQ.EunerWonNPbgToLcOAM-kQAKtRWTvyun3W1QMuTufxk
 
 ### USER PUT ADDRESS
 PUT http://localhost:3000/account/5ea1b03c-6f15-427d-b520-8956d422df77/address

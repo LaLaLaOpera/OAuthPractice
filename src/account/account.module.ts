@@ -11,7 +11,6 @@ import { AccountRepository } from './repository/account.repository';
 import { SocialInfoRepository } from './repository/social.info.repository';
 import { AddressService } from './address.service';
 import { Address } from './entities/address.entity';
-
 @Module({
   imports: [TypeOrmModule.forFeature([Account, SocialInfo, Address])],
   controllers: [AccountController],

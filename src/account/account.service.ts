@@ -167,16 +167,11 @@ export class AccountService {
     const id = req.user.id;
     console.log(id);
     const Account = await this.repo
-      .createQueryBuilder('Account')
-      .select(['Account.id', 'Account.email', 'Account.phone'])
-      //.leftJoinAndSelect('Account.groupToAccount', 'gtm')
-      .leftJoin('Account.groupToAccount', 'gtm')
-      //.leftJoinAndSelect('gtm.group', 'group')
-      .leftJoin('gtm.group', 'group')
-      .addSelect('array_agg(group.id) as group_ids')
-      .where('Account.id = :id', { id: id })
-      .groupBy('Account.id')
-      .getRawMany();
+      .createQueryBuilder('account')
+      .select(['account.id', 'account.email', 'account.phone'])
+      .leftJoin('account.group', 'group')
+      .addSelect(['group.id', 'group.name'])
+      .getMany();
 
     // const group = Account.groupToAccount.map((s) => {
     //   return s.group.name;
@@ -184,5 +179,14 @@ export class AccountService {
     // delete Account.groupToAccount;
     // Account['group'] = group;
     return { Account };
+  }
+  test() {
+    class a {
+      name: string;
+      type: number;
+    }
+    const b = Object.getOwnPropertyDescriptors(a.constructor(a));
+    console.log(b);
+    return b;
   }
 }

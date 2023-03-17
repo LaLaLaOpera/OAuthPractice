@@ -1,4 +1,4 @@
-import { Base } from '../../utiles/base.entity';
+import { Base } from '@/utiles/base.entity';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { Account } from './account.entity';
 

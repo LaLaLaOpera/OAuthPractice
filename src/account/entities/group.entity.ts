@@ -1,6 +1,7 @@
-import { Base } from '../../utiles/base.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
-import { GroupToAccount } from './group.to.account.entity';
+import { Base } from '@/utiles/base.entity';
+import { Column, Entity, OneToMany, Relation } from 'typeorm';
+import { GroupPolicy } from '@/feature/entities/group.policy.entity';
+import { Account } from './account.entity';
 
 @Entity({})
 export class Group extends Base {
@@ -9,6 +10,9 @@ export class Group extends Base {
   })
   name: string;
 
-  @OneToMany(() => GroupToAccount, (target) => target.group)
-  groupToAccount: GroupToAccount[];
+  @OneToMany(() => Account, (target) => target.group)
+  accounts: Account[];
+
+  @OneToMany(() => GroupPolicy, (target) => target.group)
+  groupPolicies: Relation<GroupPolicy>[];
 }

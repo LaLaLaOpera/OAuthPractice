@@ -1,10 +1,11 @@
-import { Base } from '../../utiles/base.entity';
-import { Column, Entity, OneToMany, Unique } from 'typeorm';
+import { Base } from '@/utiles/base.entity';
+import { Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
 import { SocialInfo } from './social.info.entity';
 import { UserLog } from './user.log.entity';
-import { GroupToAccount } from './group.to.account.entity';
 import { Address } from './address.entity';
-import { SellerInfo } from './seller.info.entity';
+// import { SellerInfo } from './seller.info.entity';
+import { Group } from './group.entity';
+import { AccountPolicy } from '@/feature/entities/account.policy.entity';
 
 @Entity()
 @Unique(['email'])
@@ -14,7 +15,7 @@ export class Account extends Base {
     comment: '사용자가 로그인에 사용할 이메일',
     //name: 'acc_email',
   })
-  email: string;
+  public email: string;
 
   @Column({
     select: false,
@@ -102,18 +103,21 @@ export class Account extends Base {
   })
   lastlogin_date: Date;
 
+  @ManyToOne(() => Group, (target) => target.accounts)
+  group: Group;
+
   @OneToMany(() => UserLog, (userLog) => userLog.account)
   userLogs: UserLog[];
 
   @OneToMany(() => SocialInfo, (target) => target.account)
   socialInfo: SocialInfo[];
 
-  @OneToMany(() => GroupToAccount, (target) => target.Account)
-  groupToAccount: GroupToAccount[];
-
   @OneToMany(() => Address, (target) => target.account)
   addresses: Address[];
 
-  @OneToMany(() => SellerInfo, (target) => target.account)
-  sellerInfos: SellerInfo[];
+  @OneToMany(() => AccountPolicy, (target) => target.account)
+  accountPolicies: AccountPolicy[];
+
+  // @OneToMany(() => SellerInfo, (target) => target.account)
+  // sellerInfos: SellerInfo[];
 }
